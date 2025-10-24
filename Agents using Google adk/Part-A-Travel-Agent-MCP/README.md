@@ -9,6 +9,9 @@ The implementation showcases how MCP acts as a crucial intermediary between the 
 ## 📹 Video Demonstration
 https://youtu.be/3AcKGGuLYLw
 
+## CodeLab Link
+https://codelabs.developers.google.com/travel-agent-mcp-toolbox-adk#0
+
 ## 🏗️ Architecture Overview
 
 The system operates across three secure and distinct layers:

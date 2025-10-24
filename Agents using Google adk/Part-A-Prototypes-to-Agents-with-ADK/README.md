@@ -6,6 +6,9 @@ This directory showcases the implementation for the Google ADK Codelab focused o
 ## 📹 Video Demonstration
 https://youtu.be/LguldIh0aDI
 
+## CodeLab Link
+https://codelabs.developers.google.com/your-first-agent-with-adk#0
+
 ## 🎯 Project Mission: Kitchen Renovation Proposal Generator
 This implementation builds an intelligent autonomous agent capable of creating detailed Kitchen Renovation Proposal Documents on demand and persisting them to Google Cloud Storage without human intervention.
 

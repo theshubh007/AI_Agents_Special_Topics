@@ -13,6 +13,9 @@ The result is a grounded, actionable AI system that goes beyond text generation 
 ## 📹 Video Demonstration
 https://youtu.be/FT24n1NLqdE
 
+## CodeLab Link
+https://codelabs.developers.google.com/devsite/codelabs/build-agents-with-adk-empowering-with-tools#0
+
 
 ## ✨ Core Architecture
 
