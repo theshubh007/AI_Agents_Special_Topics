@@ -1,0 +1,36 @@
+# MCP Toolbox Configuration for Hotel Database
+
+# Define the database source (Cloud SQL PostgreSQL)
+sources:
+  my-cloud-sql-source:
+    kind: cloud-sql-postgres
+    project: your-gcp-project-id
+    instance: hoteldb-instance
+    database: hoteldb
+    user: postgres
+    password: your-password
+
+# Define the tools (database queries)
+tools:
+  search-hotels-by-name:
+    description: Search for hotels based on name. Use this when the user asks about a specific hotel.
+    source: my-cloud-sql-source
+    statement: SELECT * FROM hotels WHERE name ILIKE '%' || $1 || '%';
+    
+  search-hotels-by-location:
+    description: Search for hotels based on location. Results are sorted by price tier (Economy, Midscale, Luxury). Use this when the user asks about hotels in a city or area.
+    source: my-cloud-sql-source
+    statement: |
+      SELECT * FROM hotels 
+      WHERE location ILIKE '%' || $1 || '%'
+      ORDER BY CASE price_tier 
+        WHEN 'Economy' THEN 1 
+        WHEN 'Midscale' THEN 2 
+        WHEN 'Luxury' THEN 3 
+      END;
+
+# Group tools into a toolset for the agent
+toolsets:
+  my_first_toolset:
+    - search-hotels-by-name
+    - search-hotels-by-location
