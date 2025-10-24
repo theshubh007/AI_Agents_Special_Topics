@@ -1,4 +1,4 @@
-# Building Autonomous Agents with ADK 🤖
+# Prototypes to Agents with ADK 🤖
 
 ## Overview
 This directory showcases the implementation for the Google ADK Codelab focused on evolving simple prompt-based AI prototypes into sophisticated, autonomous agent systems. The codelab walks through creating a single-agent architecture using Google's Agent Development Kit (ADK) and Gemini models to tackle practical business challenges.

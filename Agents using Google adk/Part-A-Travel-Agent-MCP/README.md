@@ -1,4 +1,4 @@
-# 🏨 Hotel Search Agent with ADK and MCP Toolbox for Databases
+# 🏨 Travel(Hotel Search) Agent with ADK and MCP Toolbox for Databases
 
 ## 🎯 Project Goal
 
