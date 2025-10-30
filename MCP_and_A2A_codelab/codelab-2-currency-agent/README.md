@@ -1,419 +1,655 @@
-# Codelab 2: Currency Agent with ADK, MCP, and A2A
+# 💱 Currency Conversion Agent with ADK, MCP, and A2A
 
-**Codelab Link:** [Getting Started with ADK, MCP, and A2A](https://codelabs.developers.google.com/codelabs/currency-agent#0)
+## 🎯 Project Goal
 
----
+This repository demonstrates the architecture and implementation of a production-grade currency conversion agent using Google's Agent Development Kit (ADK), Model Context Protocol (MCP), and Agent-to-Agent (A2A) protocol. The agent provides real-time currency conversion capabilities while leveraging MCP servers to expose external tools and A2A protocol for seamless agent communication.
 
-## 📋 Overview
+The implementation showcases how MCP acts as a crucial bridge between the LLM-powered agent and external currency exchange rate APIs, providing secure, standardized tool execution. The agent can communicate with other financial agents via A2A protocol, enabling complex multi-agent financial workflows.
 
-This codelab demonstrates building a currency conversion agent that integrates Google's Agent Development Kit (ADK), Model Context Protocol (MCP), and Agent-to-Agent (A2A) protocol. The agent provides real-time currency conversion capabilities while leveraging MCP for context management and A2A for agent communication.
+## 📹 Video Demonstration
+*[Link to video walkthrough will be added here]*
 
-**Learning Objectives:**
-- Implement currency conversion functionality
-- Integrate Model Context Protocol (MCP)
-- Use ADK for agent development
-- Enable A2A protocol for agent communication
-- Handle real-time data from external APIs
+## CodeLab Link
+https://codelabs.developers.google.com/codelabs/currency-agent#0
 
----
+## 🏗️ Architecture Overview
 
-## 🎯 What You'll Build
+The system operates across three integrated layers with clear separation of concerns:
 
-A fully functional currency conversion agent that:
-- Converts between multiple currencies
-- Provides real-time exchange rates
-- Uses MCP to maintain conversation context
-- Communicates with other agents via A2A
-- Handles multiple currency pairs simultaneously
+### 1. Agent Layer (ADK)
 
----
+The application hosting the Gemini model that:
 
-## 🛠️ Prerequisites
+- Acts as the reasoning engine for currency queries
+- Interprets natural language requests
+- Decides when to invoke currency conversion tools
+- Generates user-friendly responses based on conversion results
+- Maintains conversation context via MCP
 
-Before starting this codelab, ensure you have:
-- Python 3.10 or higher installed
-- Google ADK installed
-- API key for currency exchange rate service
-- Basic understanding of REST APIs
-- Familiarity with async programming in Python
+### 2. MCP Server Layer (Tool Provider)
 
----
+A crucial intermediary service that:
 
-## 📚 Key Concepts
+- Exposes currency conversion as standardized tools
+- Provides secure access to the Frankfurter API
+- Defines tool schemas for the LLM to understand
+- Translates natural language requests into API calls
+- Handles rate limiting and error responses
+- Shields the agent from raw API complexity
 
-### Model Context Protocol (MCP)
-A protocol for managing context between models and applications, enabling:
-- Context persistence across conversations
-- Efficient context retrieval
-- Context sharing between agents
-- Memory management
+**Key MCP Features:**
+```python
+# MCP Server exposes tools
+get_exchange_rate(from_currency, to_currency)
+# Returns current exchange rate between currencies
 
-### Currency Conversion Agent
-An AI agent that:
-- Fetches real-time exchange rates
-- Performs currency calculations
-- Maintains conversion history
-- Provides currency information
-
-### Integration Architecture
-```
-User Input → Currency Agent → MCP (Context) → External API → Response
-                ↓                                    ↓
-            A2A Protocol ← → Other Agents        Exchange Rates
+# MCP provides standardized interface
+- Tool discovery
+- Parameter validation
+- Error handling
+- Response formatting
 ```
 
----
+### 3. External API Layer (Frankfurter)
 
-## 🚀 Setup Instructions
+The data source providing:
 
-### 1. Install Dependencies
-```bash
-pip install google-adk
-pip install requests
-pip install aiohttp
-pip install mcp-client
-```
+- Real-time currency exchange rates
+- Historical exchange rate data
+- Support for 30+ currencies
+- Free, open-source currency API
+- No authentication required
 
-### 2. Configure API Keys
-Create a `.env` file:
-```bash
-CURRENCY_API_KEY=your_api_key_here
-GOOGLE_API_KEY=your_google_api_key
-```
+## 📋 Implementation Phases
 
-### 3. Initialize Project
-```bash
-adk init currency-agent
-cd currency-agent
-```
+### Phase 1: MCP Server Development
 
----
+**Create Local MCP Server:**
 
-## 📁 Project Structure
-
-```
-codelab-2-currency-agent/
-├── README.md                      # This file
-├── .env.example                   # Environment variables template
-├── requirements.txt               # Python dependencies
-├── currency_agent/
-│   ├── __init__.py
-│   ├── agent.py                  # Main agent implementation
-│   ├── currency_service.py       # Currency API integration
-│   ├── mcp_handler.py            # MCP context management
-│   └── a2a_client.py             # A2A protocol client
-├── config/
-│   ├── agent_config.yaml         # Agent configuration
-│   └── mcp_config.yaml           # MCP configuration
-├── tools/
-│   ├── __init__.py
-│   └── currency_tools.py         # Currency conversion tools
-└── tests/
-    ├── test_agent.py
-    ├── test_currency_service.py
-    └── test_mcp_integration.py
-```
-
----
-
-## 💻 Implementation
-
-### Currency Agent Core
+The MCP server uses FastMCP Python package to create a lightweight server that exposes currency conversion tools:
 
 ```python
-# Example agent implementation
-from google_adk import Agent
-from mcp_client import MCPClient
+# mcp-server/server.py
+import logging
+import os
+from mcp import FastMCP
+import httpx
 
-class CurrencyAgent(Agent):
-    def __init__(self):
-        super().__init__(name="currency_agent")
-        self.mcp_client = MCPClient()
-        self.supported_currencies = ["USD", "EUR", "GBP", "JPY", "CAD"]
+# Setup logging
+logging.basicConfig(level=logging.INFO)
+
+# Create MCP server
+mcp = FastMCP()
+
+# Frankfurter API endpoint
+FRANKFURTER_API = "https://api.frankfurter.app/latest"
+
+@mcp.tool()
+async def get_exchange_rate(from_currency: str, to_currency: str) -> dict:
+    """
+    Get the current exchange rate between two currencies.
     
-    async def convert_currency(self, amount, from_currency, to_currency):
-        # Fetch exchange rate
-        rate = await self.get_exchange_rate(from_currency, to_currency)
+    Args:
+        from_currency: Source currency code (e.g., USD)
+        to_currency: Target currency code (e.g., EUR)
+    
+    Returns:
+        Exchange rate and conversion details
+    """
+    async with httpx.AsyncClient() as client:
+        response = await client.get(
+            FRANKFURTER_API,
+            params={"from": from_currency, "to": to_currency}
+        )
+        data = response.json()
         
-        # Perform conversion
-        result = amount * rate
-        
-        # Store in MCP context
-        await self.mcp_client.store_context({
-            "conversion": {
-                "from": from_currency,
-                "to": to_currency,
-                "rate": rate,
-                "result": result
-            }
-        })
-        
-        return result
-```
-
-### MCP Integration
-
-**Context Management:**
-- Store conversion history
-- Retrieve previous conversions
-- Share context with other agents
-- Maintain user preferences
-
-**Context Structure:**
-```json
-{
-  "user_id": "user123",
-  "conversation_id": "conv456",
-  "conversions": [
-    {
-      "timestamp": "2024-01-01T12:00:00Z",
-      "from": "USD",
-      "to": "EUR",
-      "amount": 100,
-      "rate": 0.85,
-      "result": 85
-    }
-  ],
-  "preferences": {
-    "default_currency": "USD",
-    "precision": 2
-  }
-}
-```
-
-### A2A Protocol Implementation
-
-**Agent Communication:**
-```python
-# Request assistance from another agent
-response = await a2a_client.send_message(
-    target_agent="financial_advisor_agent",
-    message={
-        "type": "currency_conversion_complete",
-        "data": {
-            "conversion_result": result,
-            "request_advice": True
+        return {
+            "from": from_currency,
+            "to": to_currency,
+            "rate": data["rates"][to_currency],
+            "date": data["date"]
         }
-    }
+```
+
+**MCP Server Configuration:**
+
+```toml
+# mcp-server/pyproject.toml
+[project]
+name = "currency-mcp-server"
+version = "0.1.0"
+dependencies = [
+    "fastmcp>=0.1.0",
+    "httpx>=0.24.0"
+]
+
+[tool.fastmcp]
+name = "currency-converter"
+description = "MCP server for currency conversion"
+```
+
+### Phase 2: Deploy MCP Server to Cloud Run
+
+**Containerization:**
+
+```dockerfile
+# mcp-server/Dockerfile
+FROM python:3.11-slim
+
+WORKDIR /app
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY server.py .
+EXPOSE 8080
+
+CMD ["uvicorn", "server:app", "--host", "0.0.0.0", "--port", "8080"]
+```
+
+**Deploy to Cloud Run:**
+
+```bash
+# Build and deploy
+gcloud run deploy currency-mcp-server \
+  --source=./mcp-server \
+  --region=us-central1 \
+  --allow-unauthenticated \
+  --platform=managed
+
+# Get the service URL
+gcloud run services describe currency-mcp-server \
+  --region=us-central1 \
+  --format='value(status.url)'
+```
+
+### Phase 3: Currency Agent Development
+
+**Agent Implementation:**
+
+```python
+# currency_agent/agent.py
+from google.adk.agents import Agent
+from google.adk.mcp import MCPClient
+
+# Initialize MCP client
+mcp_client = MCPClient("https://your-mcp-server-url.run.app")
+
+# Load tools from MCP server
+currency_tools = mcp_client.load_tools()
+
+# Create currency agent
+currency_agent = Agent(
+    model='gemini-2.0-flash',
+    name='currency_agent',
+    description='Agent for currency conversion using real-time exchange rates',
+    instruction="""
+    You are a helpful currency conversion assistant. When users ask about 
+    currency conversions or exchange rates, use the available tools to:
+    1. Get current exchange rates from the MCP server
+    2. Perform accurate conversions
+    3. Provide clear explanations with the conversion details
+    4. Always specify the date of the exchange rate
+    
+    Be conversational and helpful in your responses.
+    """,
+    tools=currency_tools  # MCP tools loaded from server
 )
 ```
 
----
+**Agent Execution:**
 
-## 🔧 Configuration
+```python
+# Run the agent locally
+from google.adk.runner import AgentRunner
 
-### Agent Configuration (agent_config.yaml)
-```yaml
-agent:
-  name: currency_agent
-  description: "Real-time currency conversion agent"
-  capabilities:
-    - currency_conversion
-    - exchange_rate_lookup
-    - historical_data
-  
-  supported_currencies:
-    - USD
-    - EUR
-    - GBP
-    - JPY
-    - CAD
-    - AUD
-    - CHF
-    - CNY
+runner = AgentRunner(currency_agent)
+runner.run()
 
-mcp:
-  enabled: true
-  context_retention: 24h
-  max_context_size: 1MB
-
-a2a:
-  enabled: true
-  discovery: true
-  timeout: 30s
+# Example interactions:
+# User: "Convert 100 USD to EUR"
+# Agent uses get_exchange_rate tool → Returns conversion
 ```
 
-### API Configuration
-```python
-CURRENCY_API = {
-    "base_url": "https://api.exchangerate-api.com/v4/latest/",
-    "fallback_url": "https://api.fixer.io/latest",
-    "timeout": 10,
-    "cache_duration": 3600  # 1 hour
+### Phase 4: A2A Protocol Integration
+
+**Agent Card Definition:**
+
+```json
+{
+  "name": "currency_agent",
+  "description": "Real-time currency conversion agent with 30+ currencies",
+  "version": "1.0.0",
+  "capabilities": [
+    "currency_conversion",
+    "exchange_rate_lookup",
+    "multi_currency_support"
+  ],
+  "supported_currencies": [
+    "USD", "EUR", "GBP", "JPY", "CAD", "AUD", "CHF", "CNY", "INR", "BRL"
+  ],
+  "authentication": {
+    "type": "none",
+    "required": false
+  },
+  "endpoint": "https://your-agent-url.run.app",
+  "protocol": "a2a",
+  "tools": [
+    {
+      "name": "get_exchange_rate",
+      "description": "Get current exchange rate between two currencies",
+      "parameters": {
+        "from_currency": "string",
+        "to_currency": "string"
+      }
+    }
+  ]
 }
 ```
 
----
+**A2A Communication Example:**
 
-## 🧪 Testing
+```python
+# Another agent requesting currency conversion via A2A
+from google.adk.a2a import A2AClient
 
-### Unit Tests
-```bash
-pytest tests/test_agent.py -v
-pytest tests/test_currency_service.py -v
-pytest tests/test_mcp_integration.py -v
+a2a_client = A2AClient()
+
+# Discover currency agent
+agent_card = await a2a_client.discover_agent("currency_agent")
+
+# Send request to currency agent
+response = await a2a_client.send_message(
+    target_agent="currency_agent",
+    message={
+        "type": "tool_request",
+        "tool": "get_exchange_rate",
+        "parameters": {
+            "from_currency": "USD",
+            "to_currency": "EUR"
+        }
+    }
+)
+
+print(f"Exchange rate: {response['rate']}")
 ```
 
-### Integration Tests
-```bash
-# Test currency conversion
-python -m currency_agent.test_conversion --from USD --to EUR --amount 100
+## 🚀 Usage Examples
 
-# Test MCP context
-python -m currency_agent.test_mcp_context
+The currency agent handles various conversion scenarios:
 
-# Test A2A communication
-python -m currency_agent.test_a2a_messages
+**Simple Conversion:**
+
+```
+User: "Convert 100 USD to EUR"
+→ Agent invokes get_exchange_rate(USD, EUR)
+→ MCP Server calls Frankfurter API
+→ Returns: "100 USD equals 92.15 EUR at the exchange rate of 0.9215 (as of 2024-01-15)"
 ```
 
-### Manual Testing
-```bash
-# Start the agent
-adk run currency_agent
+**Multiple Currency Inquiry:**
 
-# Test queries:
-# "Convert 100 USD to EUR"
-# "What's the exchange rate for GBP to JPY?"
-# "Convert 50 euros to dollars"
+```
+User: "What's the exchange rate from GBP to JPY and CAD?"
+→ Agent makes two tool calls via MCP
+→ get_exchange_rate(GBP, JPY) → 184.52
+→ get_exchange_rate(GBP, CAD) → 1.68
+→ Returns formatted response with both rates
 ```
 
----
+**Historical Context:**
 
-## 🚢 Running the Agent
-
-### Local Development
-```bash
-# Set environment variables
-export CURRENCY_API_KEY=your_key_here
-
-# Run the agent
-adk run currency_agent --local
-
-# Access the agent
-curl -X POST http://localhost:8080/convert \
-  -H "Content-Type: application/json" \
-  -d '{"amount": 100, "from": "USD", "to": "EUR"}'
+```
+User: "I need to convert 500 EUR to USD"
+→ Agent uses MCP tool: get_exchange_rate(EUR, USD)
+→ Conversion: 500 EUR = 542.50 USD (rate: 1.085)
+→ Agent provides context: "Based on today's rate..."
 ```
 
-### Production Deployment
-```bash
-# Deploy to Agent Engine
-adk deploy currency_agent --environment production
+**A2A Multi-Agent Scenario:**
 
-# Verify deployment
-adk status currency_agent
+```
+Financial Advisor Agent: "Check if 1000 USD is enough to buy item priced at 850 EUR"
+→ Sends A2A request to Currency Agent
+→ Currency Agent: get_exchange_rate(USD, EUR) → 0.92
+→ Calculation: 1000 * 0.92 = 920 EUR
+→ Response: "Yes, 1000 USD (920 EUR) is sufficient for 850 EUR purchase"
 ```
 
----
+## 🔄 Interaction Flow
 
-## 📊 Results
+1. **User Query** → Natural language currency conversion request
+2. **LLM Analysis** → Agent interprets intent and identifies currency pair
+3. **Tool Selection** → Agent chooses get_exchange_rate tool
+4. **MCP Invocation** → Tool call sent to MCP server
+5. **API Execution** → MCP server queries Frankfurter API
+6. **Data Return** → Exchange rate data flows back through layers
+7. **Response Generation** → LLM creates natural language response
+8. **User Response** → Formatted conversion result delivered
 
-### Supported Operations
+## 🔑 Key Concepts
 
-1. **Currency Conversion**
-   - Input: Amount, source currency, target currency
-   - Output: Converted amount with exchange rate
+### Model Context Protocol (MCP) Benefits
 
-2. **Exchange Rate Lookup**
-   - Input: Currency pair (e.g., USD/EUR)
-   - Output: Current exchange rate
+**Standardized Tool Interface:**
+- Consistent tool definition across different agents
+- Easy tool discovery and documentation
+- Parameter validation at the protocol level
 
-3. **Historical Data**
-   - Input: Currency pair and date range
-   - Output: Historical exchange rates
+**Secure API Access:**
+- MCP server acts as security boundary
+- API keys and secrets stored server-side
+- Rate limiting and quota management
+- Prevents direct API exposure to LLM
 
-4. **Multi-Currency Conversion**
-   - Input: Amount and list of target currencies
-   - Output: Conversion to all specified currencies
+**Tool Reusability:**
+- Multiple agents can use same MCP server
+- Tools defined once, used everywhere
+- Centralized maintenance and updates
 
-### Example Interactions
+**Context Management:**
+- MCP can maintain conversation state
+- Share context between agents
+- Persist tool call history
 
-**User:** "Convert 100 USD to EUR"
-**Agent:** "100 USD equals 85.50 EUR at the current exchange rate of 0.855"
+### Complementary Roles: MCP vs A2A
 
-**User:** "What about to GBP and JPY?"
-**Agent:** "Based on your previous conversion:
-- 100 USD = 78.20 GBP (rate: 0.782)
-- 100 USD = 11,050 JPY (rate: 110.50)"
+**MCP (Model Context Protocol):**
+- Focus: Connecting LLMs with **tools and data**
+- Purpose: Tool invocation and resource access
+- Scope: Single agent to multiple tools
+- Example: Agent → MCP Server → Currency API
 
----
+**A2A (Agent-to-Agent):**
+- Focus: Connecting **agents with agents**
+- Purpose: Agent collaboration and coordination
+- Scope: Multi-agent communication
+- Example: Financial Agent ← A2A → Currency Agent
+
+**Recommended Pattern:**
+- Use MCP for tools/APIs
+- Use A2A for agent collaboration
+- Agents expose MCP tools to other agents via A2A
+
+### Currency Agent Architecture
+
+**Three-Layer Design:**
+```
+┌─────────────────────────────────────┐
+│   Currency Agent (ADK + Gemini)     │  ← Reasoning & NL interface
+├─────────────────────────────────────┤
+│   MCP Server (Tool Provider)        │  ← Tool definition & API access
+├─────────────────────────────────────┤
+│   Frankfurter API (Data Source)     │  ← Exchange rate data
+└─────────────────────────────────────┘
+```
+
+## 🔗 Learning Resources
+
+- **Original Codelab:** https://codelabs.developers.google.com/codelabs/currency-agent#0
+- **MCP Documentation:** https://modelcontextprotocol.io/
+- **ADK Documentation:** https://developers.google.com/adk
+- **A2A Protocol:** https://developers.google.com/adk/a2a
+- **Frankfurter API:** https://www.frankfurter.app/docs/
+- **FastMCP Guide:** https://github.com/jlowin/fastmcp
+
+## 🧹 Cleanup
+
+Always clean up Google Cloud resources to manage costs:
+
+```bash
+# Delete Cloud Run service
+gcloud run services delete currency-mcp-server \
+  --region=us-central1
+
+# Delete container images (optional)
+gcloud artifacts docker images delete \
+  us-central1-docker.pkg.dev/PROJECT_ID/currency-mcp-server
+
+# Delete Agent Engine deployment (if deployed)
+adk delete currency_agent
+```
+
+## 💡 Key Takeaways
+
+1. **MCP as Tool Bridge** - MCP servers provide standardized, secure access to external APIs
+2. **Three-layer architecture** - Clear separation between agent, tools, and data sources
+3. **FastMCP simplicity** - Creating MCP servers is straightforward with FastMCP
+4. **Cloud Run deployment** - Serverless MCP server hosting for scalability
+5. **A2A for collaboration** - Currency agent can serve other financial agents
+6. **Real-world integration** - Demonstrates practical API integration patterns
+7. **Production patterns** - Security, error handling, and rate limiting considerations
+
+## 🎓 Advanced Topics
+
+### Adding Historical Rate Support
+
+```python
+@mcp.tool()
+async def get_historical_rate(
+    from_currency: str,
+    to_currency: str,
+    date: str  # Format: YYYY-MM-DD
+) -> dict:
+    """Get historical exchange rate for a specific date."""
+    url = f"https://api.frankfurter.app/{date}"
+    async with httpx.AsyncClient() as client:
+        response = await client.get(
+            url,
+            params={"from": from_currency, "to": to_currency}
+        )
+        return response.json()
+```
+
+### Multi-Currency Conversion
+
+```python
+@mcp.tool()
+async def convert_to_multiple(
+    amount: float,
+    from_currency: str,
+    to_currencies: list[str]
+) -> dict:
+    """Convert amount to multiple target currencies."""
+    results = {}
+    async with httpx.AsyncClient() as client:
+        for to_curr in to_currencies:
+            rate_data = await get_exchange_rate(from_currency, to_curr)
+            results[to_curr] = amount * rate_data["rate"]
+    return results
+```
+
+### Caching for Performance
+
+```python
+from functools import lru_cache
+from datetime import datetime, timedelta
+
+# Cache rates for 1 hour
+_rate_cache = {}
+_cache_duration = timedelta(hours=1)
+
+async def get_cached_exchange_rate(from_curr: str, to_curr: str):
+    cache_key = f"{from_curr}_{to_curr}"
+    now = datetime.now()
+    
+    if cache_key in _rate_cache:
+        cached_time, cached_rate = _rate_cache[cache_key]
+        if now - cached_time < _cache_duration:
+            return cached_rate
+    
+    # Fetch fresh rate
+    rate = await get_exchange_rate(from_curr, to_curr)
+    _rate_cache[cache_key] = (now, rate)
+    return rate
+```
+
+## 📊 Supported Currencies
+
+The Frankfurter API supports 30+ currencies:
+
+**Major Currencies:**
+- USD (US Dollar)
+- EUR (Euro)
+- GBP (British Pound)
+- JPY (Japanese Yen)
+- CHF (Swiss Franc)
+- CAD (Canadian Dollar)
+- AUD (Australian Dollar)
+
+**Asian Currencies:**
+- CNY (Chinese Yuan)
+- INR (Indian Rupee)
+- KRW (South Korean Won)
+- SGD (Singapore Dollar)
+- THB (Thai Baht)
+
+**Other Major Economies:**
+- BRL (Brazilian Real)
+- MXN (Mexican Peso)
+- RUB (Russian Ruble)
+- ZAR (South African Rand)
 
 ## 🐛 Troubleshooting
 
 ### Common Issues
 
+**Issue:** MCP server not starting
+- **Solution:** Check port 8080 is not in use, verify dependencies installed
+
+**Issue:** Tool not discovered by agent
+- **Solution:** Verify MCP server URL is correct, check server is running
+
 **Issue:** API rate limit exceeded
-- **Solution:** Implement caching and rate limiting in `currency_service.py`
+- **Solution:** Implement caching, add rate limiting in MCP server
 
-**Issue:** MCP context not persisting
-- **Solution:** Check MCP client configuration and connection
+**Issue:** Currency not found
+- **Solution:** Verify currency code is valid (use ISO 4217 codes)
 
-**Issue:** Stale exchange rates
-- **Solution:** Adjust cache duration in configuration
+**Issue:** A2A connection timeout
+- **Solution:** Check network connectivity, increase timeout settings
 
-**Issue:** A2A timeout errors
-- **Solution:** Increase timeout value or check network connectivity
+## 🔐 Security Considerations
 
----
+- MCP server acts as security perimeter
+- No API keys needed for Frankfurter (free service)
+- If using paid APIs, store keys in Secret Manager
+- Implement rate limiting in MCP server
+- Validate all currency codes before API calls
+- Use HTTPS for all communications
+- Sanitize user inputs
+- Log all transactions for audit
 
-## 🔒 Security Considerations
+## 📝 Project Structure
 
-- Store API keys securely using environment variables
-- Implement rate limiting to prevent abuse
-- Validate all input currencies against supported list
-- Sanitize user inputs before processing
-- Use HTTPS for all API communications
-- Implement proper error handling and logging
-
----
-
-## 📖 Additional Resources
-
-- [ADK Documentation](https://developers.google.com/adk)
-- [MCP Protocol Specification](https://modelcontextprotocol.io/)
-- [Currency Exchange API Documentation](https://exchangerate-api.com/docs)
-- [A2A Protocol Guide](https://developers.google.com/adk/a2a)
-- [Financial Data Best Practices](https://developers.google.com/adk/financial)
-
----
-
-## 🎥 Video Walkthrough
-
-See the main repository for video demonstration of:
-- Agent setup and configuration
-- Currency conversion functionality
-- MCP context management
-- A2A protocol integration
-- Real-time exchange rate updates
-- Error handling and edge cases
-
----
+```
+codelab-2-currency-agent/
+├── currency-agent/
+│   ├── currency_agent/
+│   │   ├── __init__.py
+│   │   ├── agent.py              # Main agent implementation
+│   │   └── test_client.py        # Test client for agent
+│   ├── mcp-server/
+│   │   ├── server.py             # MCP server implementation
+│   │   ├── test_server.py        # MCP server tests
+│   │   ├── Dockerfile            # Container definition
+│   │   ├── pyproject.toml        # Python project config
+│   │   └── uv.lock               # Dependency lock file
+│   ├── images/
+│   │   ├── architecture.png      # Architecture diagram
+│   │   ├── adk-favicon.ico       # ADK icon
+│   │   └── mcp-favicon.ico       # MCP icon
+│   ├── pyproject.toml            # Agent project config
+│   ├── uv.lock                   # Agent dependencies
+│   ├── .env.example              # Environment template
+│   └── README.md                 # Project documentation
+└── README.md                     # This file
+```
 
 ## ✅ Completion Checklist
 
-- [ ] Currency agent implemented
-- [ ] MCP integration complete
+- [ ] MCP server implemented and tested locally
+- [ ] Currency conversion tool working
+- [ ] MCP server deployed to Cloud Run
+- [ ] Currency agent created with ADK
+- [ ] Agent connected to MCP server
+- [ ] Local agent testing completed
 - [ ] A2A protocol configured
-- [ ] API integration working
-- [ ] All tests passing
+- [ ] Agent Card created
+- [ ] Multi-agent communication tested
 - [ ] Documentation complete
 - [ ] Video walkthrough recorded
-- [ ] Deployment successful
+
+## 🚧 Testing
+
+### Test MCP Server Locally
+
+```bash
+# Start MCP server
+cd mcp-server
+python server.py
+
+# Test with curl
+curl -X POST http://localhost:8080/tools/get_exchange_rate \
+  -H "Content-Type: application/json" \
+  -d '{"from_currency": "USD", "to_currency": "EUR"}'
+```
+
+### Test Currency Agent
+
+```bash
+# Run agent locally
+cd currency-agent
+adk run
+
+# Example queries:
+# "Convert 100 USD to EUR"
+# "What's the exchange rate from GBP to JPY?"
+# "I need to convert 50 euros to dollars"
+```
+
+### Test A2A Communication
+
+```python
+# test_a2a.py
+from currency_agent.test_client import test_a2a_connection
+
+# Test agent discovery
+agent_card = await test_a2a_connection("currency_agent")
+print(f"Agent capabilities: {agent_card['capabilities']}")
+
+# Test tool invocation via A2A
+result = await invoke_via_a2a(
+    agent="currency_agent",
+    tool="get_exchange_rate",
+    params={"from_currency": "USD", "to_currency": "EUR"}
+)
+print(f"Exchange rate: {result['rate']}")
+```
+
+## 📈 Performance Metrics
+
+Expected performance characteristics:
+
+- **MCP Server Response:** < 200ms
+- **API Call Latency:** 100-300ms
+- **Agent Processing:** < 1 second
+- **End-to-End Query:** 1-2 seconds
+- **Cache Hit Rate:** 60-70% (with caching)
+- **Concurrent Users:** 100+ (Cloud Run)
+
+## 🔄 Future Enhancements
+
+- [ ] Add historical rate lookup
+- [ ] Implement rate trend analysis
+- [ ] Add currency conversion alerts
+- [ ] Support cryptocurrency conversions
+- [ ] Add batch conversion support
+- [ ] Implement rate comparison across providers
+- [ ] Add GraphQL API support
+- [ ] Create mobile app interface
 
 ---
 
-## 📝 Notes
-
-*Add your implementation notes, API observations, and learnings here.*
-
-### Performance Metrics
-- Average response time:
-- API call latency:
-- Cache hit rate:
-- Conversion accuracy:
-
-### Lessons Learned
-- MCP context management strategies
-- A2A communication patterns
-- API error handling approaches
-- Caching optimization techniques
+**Last Updated:** October 2025
+**Codelab Author:** Jack Wotherspoon, Google
+**Assignment:** CMPE-297 Special Topics - MCP and A2A Codelab
