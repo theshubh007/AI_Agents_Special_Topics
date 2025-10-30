@@ -7,7 +7,7 @@ This repository demonstrates the architecture and implementation of an intellige
 The implementation highlights A2A's complementary role to MCP (Model Context Protocol) where MCP focuses on tool integration while A2A focuses on agent collaboration. The purchasing concierge coordinates with specialized seller agents (burger and pizza vendors) to help users make informed purchasing decisions, demonstrating practical multi-agent coordination patterns.
 
 ## 📹 Video Demonstration
-*[Link to video walkthrough will be added here]*
+https://youtu.be/GpihZLwoDSw
 
 ## CodeLab Link
 https://codelabs.developers.google.com/intro-a2a-purchasing-concierge#0

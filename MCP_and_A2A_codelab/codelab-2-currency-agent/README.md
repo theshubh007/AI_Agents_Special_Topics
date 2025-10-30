@@ -7,7 +7,7 @@ This repository demonstrates the architecture and implementation of a production
 The implementation showcases how MCP acts as a crucial bridge between the LLM-powered agent and external currency exchange rate APIs, providing secure, standardized tool execution. The agent can communicate with other financial agents via A2A protocol, enabling complex multi-agent financial workflows.
 
 ## 📹 Video Demonstration
-*[Link to video walkthrough will be added here]*
+https://youtu.be/yYh08lr6tDI
 
 ## CodeLab Link
 https://codelabs.developers.google.com/codelabs/currency-agent#0
