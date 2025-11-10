@@ -1,0 +1,1 @@
+# MCP Bug Assistant Agent

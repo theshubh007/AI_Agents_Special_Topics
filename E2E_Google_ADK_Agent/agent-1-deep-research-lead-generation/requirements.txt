@@ -1,0 +1,5 @@
+google-adk
+google-generativeai
+requests
+beautifulsoup4
+pandas
