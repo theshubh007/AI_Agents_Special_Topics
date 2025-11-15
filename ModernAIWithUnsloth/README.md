@@ -2,6 +2,8 @@
 
 Practical notebooks exploring efficient training methods for compact language models using Unsloth.ai framework.
 
+[Watch Video Tutorial](https://youtu.be/m1ONP5oDvvE)
+
 ## Notebooks
 
 ### 1. Full Fine-Tuning
