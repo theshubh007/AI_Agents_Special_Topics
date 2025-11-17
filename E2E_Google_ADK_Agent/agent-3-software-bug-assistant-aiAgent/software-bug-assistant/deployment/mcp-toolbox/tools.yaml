@@ -1,0 +1,70 @@
+sources:
+  pg:
+    kind: cloud-sql-postgres
+    project: ${PROJECT_ID}
+    region: us-central1
+    instance: software-assistant
+    database: tickets-db
+    user: ${DB_USER}
+    password: ${DB_PASS}
+
+tools:
+  get-ticket-by-id:
+    kind: postgres-sql
+    source: pg
+    description: Get a ticket by its ID.
+    parameters:
+      - name: id
+        type: integer
+        description: Numeric ticket ID (e.g., 1).
+    statement: |
+      SELECT ticket_id, title, description, assignee, priority, status, creation_time, updated_time
+      FROM tickets
+      WHERE ticket_id = $1;
+
+  create-new-ticket:
+    kind: postgres-sql
+    source: pg
+    description: Create a new ticket.
+    parameters:
+      - name: title
+        type: string
+        description: Concise summary/title for the bug.
+      - name: description
+        type: string
+        description: Detailed description of the issue.
+      - name: assignee
+        type: string
+        description: Name or email of the assignee.
+      - name: priority
+        type: string
+        description: Priority label (e.g., 'P0 - Critical').
+      - name: status
+        type: string
+        description: Optional status (defaults to 'Open' if omitted).
+        optional: true
+    statement: |
+      INSERT INTO tickets (title, description, assignee, priority, status)
+      VALUES ($1, $2, $3, $4, COALESCE($5, 'Open'))
+      RETURNING ticket_id, title, assignee, priority, status, creation_time, updated_time;
+
+  search-tickets:
+    kind: postgres-sql
+    source: pg
+    description: Simple keyword search over title/description (non-vector).
+    parameters:
+      - name: query
+        type: string
+        description: Keyword(s) to search for.
+    statement: |
+      SELECT ticket_id, title, assignee, priority, status, creation_time, updated_time
+      FROM tickets
+      WHERE title ILIKE '%' || $1 || '%' OR description ILIKE '%' || $1 || '%'
+      ORDER BY updated_time DESC
+      LIMIT 25;
+
+toolsets:
+  tickets:
+    - get-ticket-by-id
+    - create-new-ticket
+    - search-tickets

@@ -1,5 +1,0 @@
-google-adk
-google-generativeai
-PyGithub
-pylint
-bandit

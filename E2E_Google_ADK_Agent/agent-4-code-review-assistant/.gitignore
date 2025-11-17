@@ -1,0 +1,408 @@
+# ============================================================================
+# Python
+# ============================================================================
+
+# ADK evaluation history
+.adk/
+*.evalset_result.json
+*.eval_result.json
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# PyInstaller
+*.manifest
+*.spec
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+cover/
+
+# Translations
+*.mo
+*.pot
+
+# Django stuff:
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+
+# Flask stuff:
+instance/
+.webassets-cache
+
+# Scrapy stuff:
+.scrapy
+
+# Sphinx documentation
+docs/_build/
+
+# PyBuilder
+.pybuilder/
+target/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# IPython
+profile_default/
+ipython_config.py
+
+# ============================================================================
+# Virtual Environments
+# ============================================================================
+
+# pyenv
+.python-version
+
+# pipenv
+Pipfile.lock
+
+# poetry
+poetry.lock
+
+# pdm
+.pdm.toml
+.pdm-python
+.pdm-build/
+
+# PEP 582
+__pypackages__/
+
+# Celery stuff
+celerybeat-schedule
+celerybeat.pid
+
+# SageMath parsed files
+*.sage.py
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# ============================================================================
+# IDE and Editors
+# ============================================================================
+
+# Spyder project settings
+.spyderproject
+.spyproject
+
+# Rope project settings
+.ropeproject
+
+# PyCharm
+.idea/
+*.iml
+*.iws
+
+# Visual Studio Code
+.vscode/
+*.code-workspace
+.history/
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# Vim
+*.swp
+*.swo
+*~
+.*.swp
+.*.swo
+
+# Emacs
+*~
+\#*\#
+.\#*
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+*.stackdump
+[Dd]esktop.ini
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+*.lnk
+
+# Linux
+.directory
+.Trash-*
+.nfs*
+
+# ============================================================================
+# Project Specific
+# ============================================================================
+
+# ADK specific
+sessions.db
+sessions.db-journal
+*.evalset.json
+*.test.json
+adk_artifacts/
+adk_sessions/
+adk_traces/
+
+# Grading reports and artifacts
+grading_reports/
+*.report.json
+*.report.html
+*.report.pdf
+feedback_archive/
+
+# User uploaded code (except test inputs)
+uploads/
+temp_code/
+# But keep test_code_inputs
+!test_code_inputs/
+
+# Generated test files
+generated_tests/
+test_results/
+*.test_output.json
+
+# Memory and session data
+memory_bank/
+session_cache/
+*.session
+*.memory
+
+# Deployment artifacts
+deployment/temp/
+deployment/staging/
+deployment/*.tar.gz
+deployment/*.zip
+.deploy_cache/
+
+# Google Cloud
+.gcloud/
+*.key.json
+service-account-*.json
+gcs-keyfile.json
+
+# Vertex AI / Agent Engine
+vertex_staging/
+reasoning_engines/
+agent_deployments/
+
+# Logs
+logs/
+*.log
+*.log.*
+error.log
+access.log
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+!test.db  # Keep test database if needed
+
+# Backup files
+*.bak
+*.backup
+*.old
+*.orig
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.temp
+.temp/
+
+# Cache directories
+.cache/
+__pycache__/
+*.pyc
+
+# ============================================================================
+# Security - NEVER commit these
+# ============================================================================
+
+# Environment variables
+.env
+.env.*
+!.env.example
+!.env.template
+
+# Credentials and secrets
+credentials/
+secrets/
+*.pem
+*.key
+*.cert
+*.crt
+*.p12
+*.pfx
+
+# API keys
+api_keys.txt
+api_keys.json
+*_api_key.txt
+
+# OAuth tokens
+token.json
+tokens/
+.token
+*.token
+
+# ============================================================================
+# Testing and Quality
+# ============================================================================
+
+# Coverage reports
+.coverage
+coverage/
+htmlcov/
+.coverage.*
+
+# Test outputs
+test_output/
+test_reports/
+*.test_result
+
+# Profiling
+*.prof
+*.lprof
+profile_output/
+
+# Type checking
+.mypy_cache/
+.dmypy.json
+dmypy.json
+.pyre/
+.pytype/
+
+# Linting
+.ruff_cache/
+.flake8_cache/
+
+# ============================================================================
+# Documentation
+# ============================================================================
+
+# Sphinx
+docs/_build/
+docs/_static/generated/
+docs/_templates/generated/
+
+# MkDocs
+site/
+
+# ============================================================================
+# Package Management
+# ============================================================================
+
+# Node (if using any JS tools)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+yarn.lock
+
+# ============================================================================
+# Miscellaneous
+# ============================================================================
+
+# Archives
+*.tar
+*.tar.gz
+*.zip
+*.7z
+*.rar
+
+# Media files (unless needed for docs)
+*.mp4
+*.avi
+*.mov
+*.mp3
+*.wav
+
+# Large files
+*.csv
+!test_data/*.csv
+*.parquet
+*.feather
+
+# Lock files (except poetry.lock if you want to commit it)
+*.lock
+!poetry.lock  # Uncomment if you want to track poetry.lock
+
+# Custom ignore patterns
+ignore/
+.ignore/
+do_not_commit/

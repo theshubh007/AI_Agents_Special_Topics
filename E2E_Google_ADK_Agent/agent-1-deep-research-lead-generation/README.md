@@ -1,154 +1,177 @@
-# 🔍 Agent 1: Deep Research Agent for Lead Generation
+# Deep Research Lead Generation Agent
 
-## 🎯 Project Goal
+An intelligent multi-agent system built with Google's Generative AI that discovers patterns in successful companies and generates qualified leads based on data-driven insights.
 
-This agent demonstrates autonomous deep research capabilities for B2B lead generation. It discovers, analyzes, and qualifies potential leads by gathering company information, finding decision-makers, and scoring leads based on predefined criteria.
+## Features
+
+- 🎯 **Intent Extraction**: Automatically parses user requests into structured criteria
+- 🔬 **Pattern Discovery**: Analyzes successful companies to identify common success patterns
+- ✅ **Parallel Validation**: Validates multiple companies simultaneously for efficiency
+- 🚀 **Lead Generation**: Finds potential leads matching discovered patterns
+- 📊 **Comprehensive Reports**: Generates detailed analysis with prioritized leads
+- 💬 **Interactive Workflow**: Guides users through each step with confirmations
+
 
 ## 📹 Video Demonstration
-[Walkthrough YouTube Video](https://www.youtube.com/)
+[Walkthrough YouTube Video](https://youtu.be/XyXIlwc8AXU)
 
-## 🏗️ Architecture Overview
+## Architecture
 
-### Agent Capabilities
-- Automated web research
-- Company information extraction
-- Contact discovery
-- Lead scoring and qualification
-- Research report generation
+The system uses a hierarchical multi-agent architecture:
 
-### Key Components
-1. **Research Agent** - Main orchestrator
-2. **Web Search Tool** - Company discovery
-3. **Data Extraction Tool** - Information gathering
-4. **Contact Finder Tool** - Decision-maker identification
-5. **Lead Scorer Tool** - Qualification algorithm
+```
+Root Agent (InteractiveLeadGenerator)
+├── Intent Extractor Agent
+├── Pattern Discovery Workflow
+│   ├── Company Finder
+│   ├── Company Formatter
+│   ├── Research Orchestrator (parallel validation)
+│   ├── Synthesizer Orchestrator
+│   └── Pattern Synthesizer
+└── Lead Generation Workflow
+    ├── Lead Finder
+    ├── Lead Formatter
+    ├── Lead Research Orchestrator (parallel analysis)
+    ├── Report Orchestrator
+    └── Report Compiler
+```
 
----
+## Installation
 
-## 📋 Implementation Steps
+1. Clone the repository
+2. Install dependencies:
+```bash
+pip install -r requirements.txt
+```
 
-### Step 1: Environment Setup
-- Install ADK and dependencies
-- Configure Google Cloud credentials
-- Set up API keys for data sources
-- Initialize project structure
+3. Create a `.env` file with your Google API key:
+```bash
+cp .env.example .env
+# Edit .env and add your GOOGLE_API_KEY
+```
 
-### Step 2: Agent Development
-- Create research agent with ADK
-- Define agent instructions
-- Configure Gemini model
-- Set up tool integration
+## Configuration
 
-### Step 3: Tool Implementation
-- Web search tool for company discovery
-- Data extraction from websites
-- Contact information finder
-- Lead scoring algorithm
-- Report generation tool
+Environment variables in `.env`:
 
-### Step 4: Testing
-- Test individual tools
-- Test complete research workflow
-- Validate lead quality
-- Verify report accuracy
+- `GOOGLE_API_KEY`: Your Google Generative AI API key (required)
+- `GEN_ADVANCED_MODEL`: Model for complex reasoning (default: gemini-2.0-flash-exp)
+- `GEN_FAST_MODEL`: Model for fast processing (default: gemini-2.0-flash-exp)
 
-### Step 5: Deployment
-- Deploy to Cloud Run
-- Configure environment variables
-- Set up monitoring
-- Test production deployment
+## Usage
 
----
+Run the interactive agent:
 
-## 🚀 Usage Examples
+```bash
+python main.py
+```
 
-### Example 1: Company Research
-**Input:** "Find tech startups in San Francisco with 50-200 employees"
+Example conversation:
 
-**Agent Actions:**
-1. Searches for matching companies
-2. Extracts company details
-3. Finds key decision-makers
-4. Scores each lead
-5. Generates research report
+```
+You: Find SaaS companies in Germany
 
-**Output:** Qualified lead list with scores and contact information
+Agent: I understand you're looking for leads in:
+- Industry: SaaS
+- Country: Germany
+- Goal: Find successful SaaS companies for lead generation
 
-### Example 2: Industry Analysis
-**Input:** "Research SaaS companies in healthcare vertical"
+Is this correct? (yes/no)
 
-**Agent Actions:**
-1. Identifies relevant companies
-2. Analyzes company profiles
-3. Evaluates market fit
-4. Scores based on criteria
-5. Prioritizes leads
+You: yes
 
-**Output:** Prioritized lead list with insights
+Agent: ✅ Pattern Discovery Complete!
 
----
+I analyzed 12 companies and found these success patterns:
+1. Cloud-native architecture with API-first approach
+   - Confidence: 0.85
+   - Found in 10 companies
+...
 
-## 🔑 Key Features
+Would you like to proceed with lead generation based on these patterns?
 
-### Automated Research
-- Multi-source data gathering
-- Intelligent information synthesis
-- Context-aware analysis
+You: yes
 
-### Lead Qualification
-- Customizable scoring criteria
-- Company size filtering
-- Industry targeting
-- Geographic filtering
+Agent: 🎉 Lead Generation Complete!
 
-### Contact Discovery
-- Decision-maker identification
-- Email finding
-- LinkedIn profile matching
-- Contact verification
+Found 25 high-quality leads matching your criteria...
+```
 
-### Report Generation
-- Structured lead reports
-- Qualification summaries
-- Action recommendations
-- Export capabilities
+## Project Structure
 
----
+```
+.
+├── agent.py                    # Root agent implementation
+├── main.py                     # Entry point
+├── config.py                   # Configuration management
+├── models.py                   # Data models (Pydantic)
+├── error_handling.py           # Error handling utilities
+├── requirements.txt            # Python dependencies
+├── .env.example               # Environment template
+├── callbacks/
+│   └── state_manager.py       # Session state management
+├── tools/
+│   └── user_interaction.py    # User interaction tools
+└── sub_agents/
+    ├── intent_extractor/      # Intent extraction agent
+    ├── shared/
+    │   └── validator/         # Reusable validation agent
+    ├── pattern_discovery/     # Pattern discovery workflow
+    │   ├── company_finder/
+    │   ├── company_formatter/
+    │   ├── research_orchestrator/
+    │   ├── synthesizer_orchestrator/
+    │   └── pattern_synthesizer/
+    └── lead_generation/       # Lead generation workflow
+        ├── lead_finder/
+        ├── lead_formatter/
+        ├── lead_research_orchestrator/
+        ├── signal_analyzer/
+        ├── report_orchestrator/
+        └── report_compiler/
+```
 
-## 💡 Best Practices
+## Data Models
 
-- Define clear lead criteria
-- Use multiple data sources
-- Validate contact information
-- Regular data updates
-- Respect rate limits
-- Handle errors gracefully
+Key data structures:
 
----
+- `IntentExtractionResult`: Parsed user intent
+- `CompanyData`: Standardized company information
+- `ValidationResult`: Company validation assessment
+- `SuccessPattern`: Identified success pattern
+- `PatternReport`: Complete pattern analysis
+- `LeadData`: Potential lead information
+- `SignalAnalysis`: Lead quality signals
+- `LeadAnalysisResult`: Complete lead assessment
+- `LeadReport`: Final lead generation report
+- `SessionState`: Conversation state management
 
-## 🔗 Resources
+## Workflow
 
-- Blog: https://cloud.google.com/blog/products/ai-machine-learning/build-a-deep-research-agent-with-google-adk
-- Code: https://github.com/MagnIeeT/leadGenerationAgentADK
-- ADK Documentation: https://developers.google.com/adk
+1. **Intent Extraction**: User provides industry and country
+2. **Pattern Discovery**: System analyzes successful companies
+3. **User Review**: User confirms or modifies patterns
+4. **Lead Generation**: System finds matching leads
+5. **Report Delivery**: User receives prioritized leads
 
----
+## Performance
 
-## ✅ Completion Checklist
+- Parallel execution for validation and analysis
+- Efficient resource utilization
+- Scalable to large datasets
+- Typical execution time: 5-15 minutes for complete workflow
 
-- [ ] Environment setup complete
-- [ ] Research agent implemented
-- [ ] Web search tool working
-- [ ] Data extraction functional
-- [ ] Contact finder operational
-- [ ] Lead scoring implemented
-- [ ] Report generation working
-- [ ] Testing completed
-- [ ] Deployed to Cloud Run
-- [ ] Video walkthrough recorded
+## Error Handling
 
----
+- Automatic retry with exponential backoff
+- Graceful degradation for partial results
+- Session state persistence
+- Comprehensive error messages
 
-**Agent:** 1 of 5
-**Complexity:** High
-**Points:** 100
+## License
+
+MIT License
+
+## Support
+
+For issues or questions, please open an issue on GitHub.

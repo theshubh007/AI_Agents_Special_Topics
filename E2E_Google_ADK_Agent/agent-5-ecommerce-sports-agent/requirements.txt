@@ -1,5 +1,0 @@
-google-adk
-google-generativeai
-sqlalchemy
-psycopg2-binary
-mcp
