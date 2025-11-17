@@ -286,6 +286,16 @@ KEY TECHNOLOGIES:
 
 ---
 
+## 📸 Project Output
+
+![Screenshot 1](ss1.png)
+
+![Screenshot 2](ss2.png)
+
+![Screenshot 3](ss3.png)
+
+---
+
 **Agent:** 5 of 5
 **Complexity:** High
 **Points:** 100

@@ -127,6 +127,14 @@ This agent demonstrates advanced tool integration by using Gemini CLI as a tool 
 
 ---
 
+## 📸 Project Output
+
+![Screenshot 1](ss1.png)
+
+![Screenshot 2](ss2.png)
+
+---
+
 ## ✅ Completion Checklist
 
 - [ ] Gemini CLI installed
