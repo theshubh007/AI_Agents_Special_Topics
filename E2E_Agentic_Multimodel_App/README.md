@@ -1,67 +1,58 @@
-# 💰 Full Stack E2E Agentic Multimodal Application
+
+# 💰 Personal Expense Manager Agent using ADK, Gemini 2.5 Flash, and Firestore
 
 **Course:** FA25: CMPE-297 Sec 49 - Special Topics
 
+
 ---
 
-## 📋 Assignment Overview
+## 📋 Project Overview
 
-This repository demonstrates a complete full-stack multimodal agent application with frontend, backend, and RAG (Retrieval-Augmented Generation) capabilities. The project showcases a Personal Expense Assistant built with Google's Agent Development Kit (ADK), featuring multimodal input processing (text, images, receipts), database integration, and an interactive web interface.
+This repository contains a complete implementation of a Personal Expense Management Agent built with Google's Agent Development Kit (ADK) and Gemini 2.5 Flash. The project demonstrates a full-stack multimodal agentic application that can process receipt images, extract expense data, store information in Firestore with vector embeddings, and provide intelligent expense tracking and analysis capabilities.
 
-**Assignment Goals:**
-- Build full-stack agentic application with frontend and backend
-- Implement multimodal capabilities (text, image, document processing)
-- Integrate RAG for intelligent information retrieval
-- Connect to proper database backend
-- Deploy end-to-end working application
-- Demonstrate complete code walkthrough
+**Key Features:**
+- Multimodal receipt processing (text + image analysis)
+- Automatic expense data extraction from receipt photos
+- Vector-based semantic search using Firestore
+- Natural language query interface
+- Metadata-based filtering for expense analysis
+- Cloud-native deployment on Google Cloud Run
 
 ## 📹 Video Demonstration
-[Walkthrough YouTube Video](https://www.youtube.com/)
+[Walkthrough YouTube Video](https://youtu.be/aQ4HVGlfhZo)
+
+## 🔗 Related Resources
+
+**Codelab:** [Build and Deploy Your Personal Expense Manager Agent](https://codelabs.developers.google.com/personal-expense-assistant-multimodal-adk)
+
+**Medium Articles:**
+- [Going Multimodal with ADK - Part 1](https://medium.com/google-cloud/going-multimodal-with-agent-development-kit-personal-expense-assistant-with-gemini-2-5-480b031c7d5a)
+- [Going Multimodal with ADK - Part 2](https://medium.com/google-cloud/going-multimodal-with-agent-development-kit-personal-expense-assistant-with-gemini-2-5-17626aaee9a2)
 
 ---
 
 ## 📂 Project Structure
 
 ```
-E2E_Agentic_Multimodel_App/
-├── backend/
-│   ├── agent/
-│   │   ├── __init__.py
-│   │   ├── expense_agent.py          # Main agent implementation
-│   │   ├── tools/
-│   │   │   ├── receipt_processor.py  # Image/receipt processing
-│   │   │   ├── expense_tracker.py    # Expense management
-│   │   │   └── analytics.py          # Data analysis tools
-│   │   └── rag/
-│   │       ├── vector_store.py       # Vector database integration
-│   │       └── retriever.py          # RAG retrieval logic
-│   ├── database/
-│   │   ├── models.py                 # Database models
-│   │   ├── connection.py             # DB connection setup
-│   │   └── migrations/               # Database migrations
-│   ├── api/
-│   │   ├── routes.py                 # API endpoints
-│   │   └── middleware.py             # Authentication, CORS
-│   ├── requirements.txt
-│   └── main.py                       # Backend entry point
-├── frontend/
-│   ├── src/
-│   │   ├── components/
-│   │   │   ├── ChatInterface.tsx     # Chat UI component
-│   │   │   ├── ReceiptUpload.tsx     # Image upload component
-│   │   │   ├── ExpenseDashboard.tsx  # Analytics dashboard
-│   │   │   └── ExpenseList.tsx       # Expense list view
-│   │   ├── services/
-│   │   │   └── api.ts                # API client
-│   │   ├── App.tsx                   # Main app component
-│   │   └── index.tsx                 # Entry point
-│   ├── package.json
-│   └── tsconfig.json
-├── database/
-│   └── schema.sql                    # Database schema
-├── docker-compose.yml                # Container orchestration
-├── .env.example                      # Environment variables template
+personal-expense-assistant-adk/
+├── expense_manager_agent/
+│   ├── __init__.py
+│   ├── agent.py                      # Main ADK agent implementation
+│   ├── tools.py                      # Agent tools (store, search, retrieve)
+│   ├── callbacks.py                  # Image data optimization callbacks
+│   ├── task_prompt.md                # Agent instruction prompt
+│   └── .env                          # Environment variables
+├── schema.py                         # Pydantic models for API
+├── utils.py                          # Utility functions (GCS, formatting)
+├── settings.py                       # Settings management
+├── settings.yaml                     # Configuration file
+├── logger.py                         # Logging configuration
+├── backend.py                        # FastAPI backend server
+├── frontend.py                       # Gradio frontend interface
+├── Dockerfile                        # Container definition
+├── supervisord.conf                  # Process management config
+├── pyproject.toml                    # Python dependencies
+├── uv.lock                           # Dependency lock file
 └── README.md                         # This file
 ```
 
@@ -69,84 +60,549 @@ E2E_Agentic_Multimodel_App/
 
 ## 🏗️ Architecture Overview
 
-### Three-Tier Architecture
+### System Architecture
 
-**1. Frontend Layer (React/TypeScript)**
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    User Interface (Gradio)                   │
+│              Chat Interface + Image Upload                   │
+└────────────────────────┬────────────────────────────────────┘
+                         │
+                         ▼
+┌─────────────────────────────────────────────────────────────┐
+│                  Backend API (FastAPI)                       │
+│              Request/Response Processing                     │
+└────────────────────────┬────────────────────────────────────┘
+                         │
+                         ▼
+┌─────────────────────────────────────────────────────────────┐
+│              ADK Agent (Gemini 2.5 Flash)                    │
+│  • Multimodal Processing (Text + Images)                    │
+│  • Tool Orchestration                                        │
+│  • Context Management                                        │
+└────────────────────────┬────────────────────────────────────┘
+                         │
+         ┌───────────────┼───────────────┐
+         ▼               ▼               ▼
+┌─────────────┐  ┌─────────────┐  ┌─────────────┐
+│  Firestore  │  │ Google Cloud│  │  Gemini API │
+│  Database   │  │   Storage   │  │  Embedding  │
+│  (Vector)   │  │  (Artifacts)│  │   Model     │
+└─────────────┘  └─────────────┘  └─────────────┘
+```
+
+### Key Components
+
+**1. Frontend (Gradio)**
 - Interactive chat interface
-- Multimodal input (text, image upload)
-- Real-time expense visualization
-- Responsive dashboard
-- Receipt image preview
+- Image upload capability
+- Real-time conversation display
+- Session management
 
-**2. Backend Layer (Python/FastAPI + ADK)**
-- ADK-powered intelligent agent
-- Multimodal processing (Gemini 2.0)
+**2. Backend (FastAPI)**
 - RESTful API endpoints
-- Business logic and validation
-- RAG integration
+- Request validation with Pydantic
+- Image processing and storage
+- Response formatting
 
-**3. Data Layer (PostgreSQL + Vector DB)**
-- Relational database for structured data
-- Vector database for RAG (Chroma/Pinecone)
-- Expense records storage
-- User data management
-- Embedding storage
+**3. ADK Agent (Gemini 2.5 Flash)**
+- Multimodal understanding (text + images)
+- Tool calling and orchestration
+- Context-aware responses
+- Thinking process with extended budget
 
-### Multimodal Capabilities
+**4. Agent Tools**
+- `store_receipt_data`: Extract and store receipt information
+- `get_receipt_data_by_image_id`: Retrieve stored receipt data
+- `search_receipts_by_metadata_filter`: Filter by date/amount
+- `search_relevant_receipts_by_natural_language_query`: Vector search
 
-**Text Processing:**
-- Natural language expense queries
-- Conversational interface
-- Intent understanding
-- Context maintenance
+**5. Data Layer**
+- **Firestore**: NoSQL database with vector search capabilities
+- **Google Cloud Storage**: Image artifact storage
+- **Text Embedding 004**: Generate embeddings for semantic search
 
-**Image Processing:**
-- Receipt photo upload
-- OCR for text extraction
-- Automatic expense categorization
-- Amount and date detection
+### Multimodal Processing Flow
 
-**Document Processing:**
-- PDF receipt handling
-- Multi-page document support
-- Structured data extraction
+1. **Image Upload**: User uploads receipt photo through Gradio UI
+2. **Artifact Storage**: Image stored in GCS with hash-based ID
+3. **Agent Processing**: Gemini 2.5 Flash analyzes image content
+4. **Data Extraction**: Store name, date, amount, items extracted
+5. **Embedding Generation**: Text embedding created for semantic search
+6. **Firestore Storage**: Structured data + vector stored in Firestore
+7. **Response**: Confirmation sent back to user
+
+---
+
+## � ️ System Architecture Diagram
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                                   USER                                       │
+│                          (Web Browser Interface)                             │
+└────────────────────────────────┬────────────────────────────────────────────┘
+                                 │
+                                 │ HTTP Request (text + images)
+                                 ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                         GRADIO FRONTEND (Port 8080)                          │
+│  ┌────────────────────────────────────────────────────────────────────┐    │
+│  │  • Chat Interface                                                   │    │
+│  │  • Image Upload Component                                           │    │
+│  │  • Session Management                                               │    │
+│  │  • Response Rendering                                               │    │
+│  └────────────────────────────────────────────────────────────────────┘    │
+└────────────────────────────────┬────────────────────────────────────────────┘
+                                 │
+                                 │ POST /chat (ChatRequest)
+                                 ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                        FASTAPI BACKEND (Port 8081)                           │
+│  ┌────────────────────────────────────────────────────────────────────┐    │
+│  │  • Request Validation (Pydantic)                                    │    │
+│  │  • Image Processing & Base64 Encoding                              │    │
+│  │  • Session/User ID Management                                       │    │
+│  │  • Response Formatting                                              │    │
+│  └────────────────────────────────────────────────────────────────────┘    │
+└────────────────────────────────┬────────────────────────────────────────────┘
+                                 │
+                                 │ format_user_request_to_adk_content()
+                                 ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                    GOOGLE CLOUD STORAGE (GCS)                                │
+│  ┌────────────────────────────────────────────────────────────────────┐    │
+│  │  Artifact Service: Store/Retrieve Images                            │    │
+│  │  • Hash-based Image IDs (SHA256)                                    │    │
+│  │  • Deduplication Logic                                              │    │
+│  │  • Bucket: personal-expense-{project-id}                            │    │
+│  └────────────────────────────────────────────────────────────────────┘    │
+└─────────────────────────────────────────────────────────────────────────────┘
+                                 │
+                                 │ ADK Content (text + inline_data)
+                                 ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                    ADK AGENT (expense_manager_agent)                         │
+│  ┌────────────────────────────────────────────────────────────────────┐    │
+│  │  Agent Configuration:                                               │    │
+│  │  • Model: gemini-2.5-flash (Vertex AI)                             │    │
+│  │  • Planner: BuiltInPlanner (thinking_budget: 2048)                 │    │
+│  │  • Callback: modify_image_data_in_history                          │    │
+│  │  • Instruction: task_prompt.md                                      │    │
+│  └────────────────────────────────────────────────────────────────────┘    │
+│                                                                              │
+│  ┌────────────────────────────────────────────────────────────────────┐    │
+│  │  Agent Tools:                                                       │    │
+│  │  ┌──────────────────────────────────────────────────────────────┐  │    │
+│  │  │ 1. store_receipt_data()                                       │  │    │
+│  │  │    • Extract: store, date, amount, items, currency           │  │    │
+│  │  │    • Generate embedding (text-embedding-004)                 │  │    │
+│  │  │    • Store in Firestore with vector                          │  │    │
+│  │  └──────────────────────────────────────────────────────────────┘  │    │
+│  │  ┌──────────────────────────────────────────────────────────────┐  │    │
+│  │  │ 2. get_receipt_data_by_image_id()                            │  │    │
+│  │  │    • Query by receipt_id (image hash)                        │  │    │
+│  │  │    • Return structured receipt data                          │  │    │
+│  │  └──────────────────────────────────────────────────────────────┘  │    │
+│  │  ┌──────────────────────────────────────────────────────────────┐  │    │
+│  │  │ 3. search_receipts_by_metadata_filter()                      │  │    │
+│  │  │    • Filter: date range, amount range                        │  │    │
+│  │  │    • Composite Firestore queries                             │  │    │
+│  │  └──────────────────────────────────────────────────────────────┘  │    │
+│  │  ┌──────────────────────────────────────────────────────────────┐  │    │
+│  │  │ 4. search_relevant_receipts_by_natural_language_query()      │  │    │
+│  │  │    • Generate query embedding                                │  │    │
+│  │  │    • Vector similarity search (Euclidean distance)           │  │    │
+│  │  │    • Return top K similar receipts                           │  │    │
+│  │  └──────────────────────────────────────────────────────────────┘  │    │
+│  └────────────────────────────────────────────────────────────────────┘    │
+└──────────────┬────────────────────────────┬─────────────────────────────────┘
+               │                            │
+               │ Tool Calls                 │ Embedding API
+               ▼                            ▼
+┌──────────────────────────────┐  ┌──────────────────────────────┐
+│   FIRESTORE DATABASE         │  │   VERTEX AI GEMINI API       │
+│  ┌────────────────────────┐  │  │  ┌────────────────────────┐  │
+│  │ Collection:            │  │  │  │ • gemini-2.5-flash     │  │
+│  │ personal-expense-      │  │  │  │   (Multimodal LLM)     │  │
+│  │ assistant-receipts     │  │  │  │                        │  │
+│  │                        │  │  │  │ • text-embedding-004   │  │
+│  │ Document Fields:       │  │  │  │   (768 dimensions)     │  │
+│  │ • receipt_id           │  │  │  └────────────────────────┘  │
+│  │ • store_name           │  │  │                              │
+│  │ • transaction_time     │  │  │  Location: us-central1       │
+│  │ • total_amount         │  │  │  Project: [GCLOUD_PROJECT]   │
+│  │ • currency             │  │  └──────────────────────────────┘
+│  │ • purchased_items[]    │  │
+│  │ • embedding (Vector)   │  │
+│  │                        │  │
+│  │ Indexes:               │  │
+│  │ • Vector Search        │  │
+│  │ • Metadata Filters     │  │
+│  └────────────────────────┘  │
+│                              │
+│  Features:                   │
+│  • Vector Similarity Search  │
+│  • Composite Queries         │
+│  • Real-time Updates         │
+└──────────────────────────────┘
+
+                    ┌─────────────────────────────────┐
+                    │   DEPLOYMENT (Cloud Run)        │
+                    │  ┌───────────────────────────┐  │
+                    │  │ Supervisord:              │  │
+                    │  │ • Backend (Port 8081)     │  │
+                    │  │ • Frontend (Port 8080)    │  │
+                    │  │ • Auto-restart enabled    │  │
+                    │  └───────────────────────────┘  │
+                    │                                 │
+                    │  Container: Python 3.12-slim    │
+                    │  Package Manager: uv            │
+                    └─────────────────────────────────┘
+```
+
+### Detailed Data Flow Scenarios
+
+**1. Receipt Upload & Storage Flow:**
+```
+┌──────────────────────────────────────────────────────────────────────────┐
+│ STEP 1: User Interaction                                                 │
+│ • User uploads receipt image (JPG/PNG) via Gradio chat interface        │
+│ • Optional: User adds text description                                   │
+│ • Gradio captures: image file, MIME type, session_id, user_id          │
+└────────────────────────────────┬─────────────────────────────────────────┘
+                                 │
+                                 ▼
+┌──────────────────────────────────────────────────────────────────────────┐
+│ STEP 2: Frontend Processing (frontend.py)                               │
+│ • Convert image to Base64 encoding                                       │
+│ • Create ChatRequest object (Pydantic validation)                        │
+│ • POST request to http://localhost:8081/chat                            │
+│ • Payload: {text, files: [{serialized_image, mime_type}], session_id}  │
+└────────────────────────────────┬─────────────────────────────────────────┘
+                                 │
+                                 ▼
+┌──────────────────────────────────────────────────────────────────────────┐
+│ STEP 3: Backend API Processing (backend.py)                             │
+│ • Validate request with Pydantic schema                                  │
+│ • Call: format_user_request_to_adk_content()                            │
+│ • Decode Base64 → binary image data                                      │
+│ • Generate SHA256 hash (first 12 chars) → image_id                      │
+└────────────────────────────────┬─────────────────────────────────────────┘
+                                 │
+                                 ▼
+┌──────────────────────────────────────────────────────────────────────────┐
+│ STEP 4: GCS Artifact Storage (utils.py)                                 │
+│ • Check if image_id exists in GCS (deduplication)                       │
+│ • If new: artifact_service.save_artifact()                              │
+│ • Store in: gs://personal-expense-{project}/artifacts/{image_id}        │
+│ • Create placeholder: [IMAGE-ID {hash}]                                 │
+└────────────────────────────────┬─────────────────────────────────────────┘
+                                 │
+                                 ▼
+┌──────────────────────────────────────────────────────────────────────────┐
+│ STEP 5: ADK Agent Invocation (agent.py)                                 │
+│ • Callback: modify_image_data_in_history() - optimize context           │
+│ • Agent receives: types.Content(role="user", parts=[image, text])       │
+│ • Gemini 2.5 Flash analyzes image with vision capabilities              │
+│ • Agent decides to use: store_receipt_data() tool                       │
+└────────────────────────────────┬─────────────────────────────────────────┘
+                                 │
+                                 ▼
+┌──────────────────────────────────────────────────────────────────────────┐
+│ STEP 6: Receipt Data Extraction (tools.py)                              │
+│ • Extract from image:                                                    │
+│   - store_name: "Starbucks Coffee"                                      │
+│   - transaction_time: "2024-11-15T14:30:00.000000Z" (ISO format)       │
+│   - total_amount: 45000.0                                               │
+│   - currency: "IDR"                                                     │
+│   - purchased_items: [{name: "Latte", price: 35000, quantity: 1}, ...] │
+│ • Validate data format and types                                        │
+└────────────────────────────────┬─────────────────────────────────────────┘
+                                 │
+                                 ▼
+┌──────────────────────────────────────────────────────────────────────────┐
+│ STEP 7: Embedding Generation (tools.py)                                 │
+│ • Create description string from all receipt fields                      │
+│ • Call: GENAI_CLIENT.models.embed_content()                             │
+│ • Model: text-embedding-004                                             │
+│ • Output: 768-dimensional vector embedding                              │
+└────────────────────────────────┬─────────────────────────────────────────┘
+                                 │
+                                 ▼
+┌──────────────────────────────────────────────────────────────────────────┐
+│ STEP 8: Firestore Storage (tools.py)                                    │
+│ • Create document with fields:                                           │
+│   {                                                                      │
+│     receipt_id: "a1b2c3d4e5f6",                                         │
+│     store_name: "Starbucks Coffee",                                     │
+│     transaction_time: "2024-11-15T14:30:00.000000Z",                   │
+│     total_amount: 45000.0,                                              │
+│     currency: "IDR",                                                    │
+│     purchased_items: [...],                                             │
+│     embedding: Vector([0.123, -0.456, ...])  // 768 dimensions         │
+│   }                                                                      │
+│ • COLLECTION.add(doc) → Firestore                                       │
+│ • Automatic indexing for vector search                                  │
+└────────────────────────────────┬─────────────────────────────────────────┘
+                                 │
+                                 ▼
+┌──────────────────────────────────────────────────────────────────────────┐
+│ STEP 9: Response Generation                                             │
+│ • Agent formats response in markdown:                                    │
+│   # THINKING PROCESS                                                    │
+│   [reasoning steps...]                                                  │
+│                                                                          │
+│   # FINAL RESPONSE                                                      │
+│   Receipt stored successfully with ID: a1b2c3d4e5f6                    │
+│   Store: Starbucks Coffee                                               │
+│   Amount: IDR 45,000                                                    │
+│   Date: Nov 15, 2024                                                    │
+│ • Extract thinking_process and sanitize response                        │
+└────────────────────────────────┬─────────────────────────────────────────┘
+                                 │
+                                 ▼
+┌──────────────────────────────────────────────────────────────────────────┐
+│ STEP 10: Display to User                                                │
+│ • Backend returns ChatResponse (Pydantic)                               │
+│ • Gradio renders markdown response                                      │
+│ • User sees confirmation with extracted details                         │
+└──────────────────────────────────────────────────────────────────────────┘
+```
+
+**2. Metadata-Based Search Flow:**
+```
+┌──────────────────────────────────────────────────────────────────────────┐
+│ User Query: "Show me all expenses from last week over 50,000 IDR"       │
+└────────────────────────────────┬─────────────────────────────────────────┘
+                                 │
+                                 ▼
+┌──────────────────────────────────────────────────────────────────────────┐
+│ ADK Agent Processing:                                                    │
+│ • Parse natural language query                                           │
+│ • Extract parameters:                                                    │
+│   - Time range: last week → calculate start_time & end_time             │
+│   - Amount filter: min_total_amount = 50000.0                           │
+│ • Select tool: search_receipts_by_metadata_filter()                     │
+└────────────────────────────────┬─────────────────────────────────────────┘
+                                 │
+                                 ▼
+┌──────────────────────────────────────────────────────────────────────────┐
+│ Firestore Query Execution:                                              │
+│ • Build composite filter:                                                │
+│   And([                                                                  │
+│     FieldFilter("transaction_time", ">=", "2024-11-10T00:00:00Z"),     │
+│     FieldFilter("transaction_time", "<=", "2024-11-17T23:59:59Z"),     │
+│     FieldFilter("total_amount", ">=", 50000.0)                          │
+│   ])                                                                     │
+│ • Execute query.stream()                                                 │
+│ • Return matching documents                                              │
+└────────────────────────────────┬─────────────────────────────────────────┘
+                                 │
+                                 ▼
+┌──────────────────────────────────────────────────────────────────────────┐
+│ Results Formatting & Response:                                          │
+│ • Format each receipt with RECEIPT_DESC_FORMAT                          │
+│ • Agent generates summary and insights                                   │
+│ • Display: 3 receipts found, total: IDR 175,000                         │
+└──────────────────────────────────────────────────────────────────────────┘
+```
+
+**3. Semantic Vector Search Flow:**
+```
+┌──────────────────────────────────────────────────────────────────────────┐
+│ User Query: "Find all my coffee purchases"                              │
+└────────────────────────────────┬─────────────────────────────────────────┘
+                                 │
+                                 ▼
+┌──────────────────────────────────────────────────────────────────────────┐
+│ ADK Agent Processing:                                                    │
+│ • Recognize fuzzy/semantic query (not exact metadata)                   │
+│ • Select tool: search_relevant_receipts_by_natural_language_query()     │
+│ • Pass query_text: "coffee purchases"                                   │
+└────────────────────────────────┬─────────────────────────────────────────┘
+                                 │
+                                 ▼
+┌──────────────────────────────────────────────────────────────────────────┐
+│ Query Embedding Generation:                                             │
+│ • Call: GENAI_CLIENT.models.embed_content()                             │
+│ • Input: "coffee purchases"                                             │
+│ • Model: text-embedding-004                                             │
+│ • Output: query_vector [768 dimensions]                                 │
+└────────────────────────────────┬─────────────────────────────────────────┘
+                                 │
+                                 ▼
+┌──────────────────────────────────────────────────────────────────────────┐
+│ Firestore Vector Search:                                                │
+│ • COLLECTION.find_nearest(                                              │
+│     vector_field="embedding",                                           │
+│     query_vector=Vector(query_embedding),                               │
+│     distance_measure=DistanceMeasure.EUCLIDEAN,                         │
+│     limit=5                                                             │
+│   )                                                                      │
+│ • Calculate Euclidean distance for all vectors                          │
+│ • Return top 5 most similar receipts                                    │
+└────────────────────────────────┬─────────────────────────────────────────┘
+                                 │
+                                 ▼
+┌──────────────────────────────────────────────────────────────────────────┐
+│ Post-Processing & Filtering:                                            │
+│ • Agent reviews results for relevance                                    │
+│ • Filters out false positives                                           │
+│ • Matches: Starbucks, Coffee Bean, Cafe Latte                          │
+│ • Excludes: Restaurant (had "coffee" in items but not main purchase)   │
+└────────────────────────────────┬─────────────────────────────────────────┘
+                                 │
+                                 ▼
+┌──────────────────────────────────────────────────────────────────────────┐
+│ Response with Context:                                                   │
+│ • Display 4 coffee-related receipts                                      │
+│ • Total spent on coffee: IDR 180,000                                    │
+│ • Most frequent: Starbucks (3 visits)                                   │
+└──────────────────────────────────────────────────────────────────────────┘
+```
+
+**4. Image Retrieval Flow:**
+```
+┌──────────────────────────────────────────────────────────────────────────┐
+│ User Query: "Show me the receipt image from Starbucks yesterday"        │
+└────────────────────────────────┬─────────────────────────────────────────┘
+                                 │
+                                 ▼
+┌──────────────────────────────────────────────────────────────────────────┐
+│ ADK Agent Processing:                                                    │
+│ • Search for receipt (metadata or vector search)                        │
+│ • Get receipt_id: "a1b2c3d4e5f6"                                        │
+│ • User explicitly requested image file                                   │
+│ • Format response with JSON attachment block                            │
+└────────────────────────────────┬─────────────────────────────────────────┘
+                                 │
+                                 ▼
+┌──────────────────────────────────────────────────────────────────────────┐
+│ Response with Attachment:                                               │
+│ # FINAL RESPONSE                                                        │
+│ Here's your Starbucks receipt from yesterday:                           │
+│                                                                          │
+│ ```json                                                                 │
+│ {                                                                        │
+│   "attachments": ["[IMAGE-ID a1b2c3d4e5f6]"]                           │
+│ }                                                                        │
+│ ```                                                                     │
+└────────────────────────────────┬─────────────────────────────────────────┘
+                                 │
+                                 ▼
+┌──────────────────────────────────────────────────────────────────────────┐
+│ Backend Processing (utils.py):                                          │
+│ • Extract attachment IDs from JSON block                                │
+│ • For each ID: download_image_from_gcs()                                │
+│ • artifact_service.load_artifact(filename=image_id)                     │
+│ • Convert to Base64 for transmission                                    │
+│ • Add to ChatResponse.attachments[]                                     │
+└────────────────────────────────┬─────────────────────────────────────────┘
+                                 │
+                                 ▼
+┌──────────────────────────────────────────────────────────────────────────┐
+│ Frontend Display:                                                        │
+│ • Gradio receives ChatResponse with attachments                         │
+│ • Decode Base64 → display image in chat                                 │
+│ • User sees original receipt photo                                      │
+└──────────────────────────────────────────────────────────────────────────┘
+```
+
+### Technical Implementation Details
+
+**Image Processing Pipeline:**
+```
+Raw Image → Base64 Encode → SHA256 Hash → GCS Upload → Placeholder
+    ↓
+MIME Type Detection (image/jpeg, image/png)
+    ↓
+Gemini Vision API → Text Extraction → Structured Data
+    ↓
+Validation (ISO datetime, numeric amounts, item format)
+```
+
+**Embedding Pipeline:**
+```
+Receipt Data → Format String → text-embedding-004 → 768D Vector
+    ↓
+Store in Firestore with Vector type
+    ↓
+Automatic indexing for similarity search
+    ↓
+Query: Euclidean distance calculation
+```
+
+**Conversation Context Management:**
+```
+History: [msg1, msg2, msg3, msg4, msg5, ...]
+    ↓
+Callback: modify_image_data_in_history()
+    ↓
+Keep full image data: Last 3 user messages only
+    ↓
+Older messages: Replace image with [IMAGE-ID hash] placeholder
+    ↓
+Reduces token usage while maintaining context
+```
+
+**Error Handling & Validation:**
+```
+Input Validation:
+├── Pydantic schema validation (ChatRequest)
+├── Image format check (MIME type)
+├── ISO datetime format validation
+├── Numeric type validation (amounts)
+└── Required fields check (store_name, total_amount)
+
+Error Recovery:
+├── Duplicate detection (receipt already exists)
+├── GCS upload retry logic
+├── Firestore connection error handling
+├── Graceful degradation (tool call failures)
+└── User-friendly error messages
+```
 
 ---
 
 ## 🎯 Key Features
 
-### 1. Multimodal Expense Tracking
-- Upload receipt photos
-- Extract expense details automatically
-- Manual entry via chat
-- Voice input support (optional)
+### 1. Multimodal Receipt Processing
+- **Image Analysis**: Upload receipt photos for automatic processing
+- **OCR Extraction**: Gemini 2.5 Flash extracts text from images
+- **Structured Data**: Automatically identifies store, date, amount, items
+- **Smart Storage**: Deduplication using hash-based image IDs
 
-### 2. Intelligent Agent Capabilities
-- Natural language understanding
-- Context-aware responses
-- Expense categorization
-- Budget recommendations
-- Spending pattern analysis
+### 2. Intelligent Search Capabilities
 
-### 3. RAG Integration
-- Retrieve past expense patterns
-- Contextual recommendations
-- Historical data analysis
-- Personalized insights
+**Metadata-Based Search:**
+- Filter by date range (start/end time)
+- Filter by amount range (min/max)
+- Precise structured queries
+- Fast retrieval
 
-### 4. Database Backend
-- Persistent expense storage
-- User authentication
-- Transaction history
-- Category management
-- Budget tracking
+**Vector-Based Semantic Search:**
+- Natural language queries ("coffee purchases", "grocery shopping")
+- Context-aware matching
+- Similarity-based ranking
+- Handles fuzzy matching for store/item names
 
-### 5. Analytics Dashboard
-- Spending trends visualization
-- Category breakdown
-- Monthly comparisons
-- Budget vs actual
-- Export capabilities
+### 3. Conversation Memory Management
+- Session-based conversation tracking
+- Image data optimization (keeps last 3 user messages)
+- Context preservation across interactions
+- Efficient token usage
+
+### 4. Cloud-Native Architecture
+- **Firestore**: Scalable NoSQL database with vector search
+- **Google Cloud Storage**: Reliable artifact storage
+- **Vertex AI**: Managed Gemini API access
+- **Cloud Run**: Serverless deployment
+
+### 5. Agent Capabilities
+- **Thinking Process**: Extended reasoning budget (2048 tokens)
+- **Tool Orchestration**: Automatic tool selection and chaining
+- **Error Handling**: Graceful failure recovery
+- **Multi-language Support**: Responds in user's language
 
 ---
 
