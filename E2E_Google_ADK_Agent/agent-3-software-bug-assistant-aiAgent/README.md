@@ -1,4 +1,4 @@
-# Software Bug Assistant - ADK Python Sample Agent
+# Software Bug Assistant - ADK Agent
 
 ## Overview
 
