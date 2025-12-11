@@ -130,8 +130,8 @@ This work points toward a future where LLMs don't just solve problems—they lea
 
 ## Project Deliverables
 
-- **Medium Article**: [Link](https://www.youtube.com/)
-- **Slide Deck**: [Link](https://www.youtube.com/)
+- **Medium Article**: [Link](https://medium.com/@ShubhamKothiya/teaching-ai-to-remember-how-to-think-81649008d22a)
+- **Slide Deck**: [Link](https://gamma.app/docs/Teaching-AI-to-Remember-How-to-Think-e5nnmihwz4fstq1)
 - **YouTube Video**: [Link](https://www.youtube.com/)
 
 ## References
