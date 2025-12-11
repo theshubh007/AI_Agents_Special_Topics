@@ -6,6 +6,14 @@ This repository provides a structured overview of Metacognitive Reuse in Large L
 
 By enabling LLMs to remember **how to reason** rather than just **what to conclude**, this approach achieves up to 46% reduction in reasoning tokens while maintaining or improving accuracy on challenging mathematical benchmarks.
 
+## Project Artifacts
+
+| Artifacts | Link | Description |
+|-------------|------|-------------|
+| **Medium Article** | [Teaching AI to Remember How to Think](https://medium.com/@ShubhamKothiya/teaching-ai-to-remember-how-to-think-81649008d22a) | High-level explanation of Metacognitive Reuse for general readers |
+| **Slide Deck** | [Teaching AI to Remember How to Think](https://gamma.app/docs/Teaching-AI-to-Remember-How-to-Think-e5nnmihwz4fstq1) | Visual presentation covering key concepts and results |
+| **YouTube Video** | [Watch on youtube](https://www.youtube.com/) | Video explanation of the research findings |
+
 ## The Problem with Repetitive Reasoning
 
 Current LLMs face a structural inefficiency when solving multi-step problems:
@@ -128,13 +136,6 @@ Metacognitive Reuse represents a fundamental shift in how LLMs approach reasonin
 
 This work points toward a future where LLMs don't just solve problems—they learn and remember **how to think**.
 
-## Project Deliverables
-
-| Deliverable | Link | Description |
-|-------------|------|-------------|
-| **Medium Article** | [Teaching AI to Remember How to Think](https://medium.com/@ShubhamKothiya/teaching-ai-to-remember-how-to-think-81649008d22a) | High-level explanation of Metacognitive Reuse for general readers |
-| **Slide Deck** | [Teaching AI to Remember How to Think](https://gamma.app/docs/Teaching-AI-to-Remember-How-to-Think-e5nnmihwz4fstq1) | Visual presentation covering key concepts and results |
-| **YouTube Video** | [Watch on youtube](https://www.youtube.com/) | Video explanation of the research findings |
 
 ## References
 
