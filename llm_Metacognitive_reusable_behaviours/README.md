@@ -134,7 +134,7 @@ This work points toward a future where LLMs don't just solve problems—they lea
 |-------------|------|-------------|
 | **Medium Article** | [Teaching AI to Remember How to Think](https://medium.com/@ShubhamKothiya/teaching-ai-to-remember-how-to-think-81649008d22a) | High-level explanation of Metacognitive Reuse for general readers |
 | **Slide Deck** | [Teaching AI to Remember How to Think](https://gamma.app/docs/Teaching-AI-to-Remember-How-to-Think-e5nnmihwz4fstq1) | Visual presentation covering key concepts and results |
-| **YouTube Video** | [Coming Soon](https://www.youtube.com/) | Video explanation of the research findings |
+| **YouTube Video** | [Watch on youtube](https://www.youtube.com/) | Video explanation of the research findings |
 
 ## References
 
