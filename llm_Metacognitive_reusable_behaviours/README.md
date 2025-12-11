@@ -1,5 +1,7 @@
 # Metacognitive-Reuse-LLM-Behaviors
 
+![Screenshot 1](banner.jpg)
+
 ## Overview
 
 This repository provides a structured overview of Metacognitive Reuse in Large Language Models (LLMs), a groundbreaking approach that converts recurring reasoning patterns into concise, reusable "behaviors." Based on the 2025 research paper, this framework addresses the inefficiency of LLMs repeatedly deriving the same intermediate steps across problems, leading to inflated token usage and latency.
